@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenzia Viaggi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #EF476F;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #024B39;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .tab {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .tab button {
+            background-color: #06D6A0;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .tab button:hover {
+            background-color: #024B39;
+        }
+
+        .content {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            background-color: #024B39;
+            margin: 20px;
+            border-radius: 8px;
+        }
+
+        .comments {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #06D6A0;
+            border-radius: 8px;
+        }
+
+        .comments input, .comments textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .stars span {
+            font-size: 20px;
+            cursor: pointer;
+            color: gray;
+        }
+
+        .selected-star {
+            color: gold !important;
+        }
+
+        .comment-list {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .comment-item {
+            padding: 10px;
+            background-color: white;
+            color: black;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .reply-section {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #d4d4d4;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Benvenuto nella nostra Agenzia Viaggi</h1>
+    </header>
+
+    <div class="tab">
+        <button onclick="showTab('home')">Home</button>
+        <button onclick="showTab('video')">Video</button>
+        <button onclick="showTab('prenotazione')">Prenotazione</button>
+        <button onclick="showTab('commenti')">Commenti</button>
+    </div>
+
+    <section id="home" class="content">
+        <h2>Chi siamo</h2>
+        <p>Scopri le migliori destinazioni con noi!</p>
+    </section>
+
+    <section id="video" class="content">
+        <h2>Esperienze Visive</h2>
+        <video controls>
+            <source src="video.mp4" type="video/mp4">
+            Il tuo browser non supporta il video.
+        </video>
+    </section>
+
+    <section id="prenotazione" class="content">
+        <h2>Prenota il tuo viaggio</h2>
+        <form id="bookingForm">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+
+            <button type="submit">Prenota</button>
+        </form>
+        
+        <div class="download-section" id="downloadSection">
+            <p>Prenotazione completata! Scarica la conferma:</p>
+            <button onclick="downloadConfirmation()">Scarica Conferma</button>
+        </div>
+    </section>
+
+    <!-- Sezione commenti con valutazione e risposte -->
+    <section id="commenti" class="content">
+        <h2>Lascia un commento e una valutazione</h2>
+        <div class="comments">
+            <input type="text" id="userName" placeholder="Nome e Cognome">
+            <textarea id="commentText" placeholder="Scrivi il tuo commento..."></textarea>
+            
+            <div class="stars">
+                <span onclick="setRating(1)">★</span>
+                <span onclick="setRating(2)">★</span>
+                <span onclick="setRating(3)">★</span>
+                <span onclick="setRating(4)">★</span>
+                <span onclick="setRating(5)">★</span>
+            </div>
+
+            <button onclick="addComment()">Invia</button>
+        </div>
+        <div class="comment-list">
+            <h3>Commenti:</h3>
+            <ul id="commentList"></ul>
+        </div>
+    </section>
+
+    <script>
+	function showTab(tabId) {
+            document.querySelectorAll(".content").forEach(section => section.style.display = "none");
+            document.getElementById(tabId).style.display = "block";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            showTab("home");
+            loadComments();
+        });
+
+        document.getElementById("bookingForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evita il refresh della pagina
+
+            // Mostra la sezione per scaricare il file
+            document.getElementById("downloadSection").style.display = "block";
+        });
+
+        function downloadConfirmation() {
+            let nome = document.getElementById("nome").value;
+            let email = document.getElementById("email").value;
+            let text = `Conferma Prenotazione\n\nNome: ${nome}\nEmail: ${email}\n\nGrazie per aver prenotato con noi!`;
+            
+            let blob = new Blob([text], { type: "text/plain" });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Conferma_Prenotazione.txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        let currentRating = 0;
+
+        function showTab(tabId) {
+            document.querySelectorAll(".content").forEach(section => section.style.display = "none");
+            document.getElementById(tabId).style.display = "block";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            showTab("home");
+            loadComments();
+        });
+
+        function setRating(rating) {
+            currentRating = rating;
+            document.querySelectorAll(".stars span").forEach((star, index) => {
+                star.classList.remove("selected-star");
+                if (index < rating) {
+                    star.classList.add("selected-star");
+                }
+            });
+        }
+        function addComment() {
+            var userName = document.getElementById("userName").value;
+            var commentText = document.getElementById("commentText").value;
+            if (userName.trim() === "" || commentText.trim() === "") return;
+
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments.push({ name: userName, text: commentText, rating: currentRating, replies: [] });
+            localStorage.setItem("comments", JSON.stringify(comments));
+
+            document.getElementById("userName").value = "";
+            document.getElementById("commentText").value = "";
+            currentRating = 0;
+            document.querySelectorAll(".stars span").forEach(star => star.classList.remove("selected-star"));
+
+            loadComments();
+        }
+
+        function addReply(index) {
+            let replyName = prompt("Inserisci il tuo Nome e Cognome:");
+            let replyText = prompt("Scrivi la tua risposta:");
+            if (!replyName || !replyText.trim()) return;
+
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments[index].replies.push({ name: replyName, text: replyText });
+            localStorage.setItem("comments", JSON.stringify(comments));
+
+            loadComments();
+        }
+
+        function loadComments() {
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            let commentList = document.getElementById("commentList");
+            commentList.innerHTML = "";
+
+            comments.forEach((comment, index) => {
+                let li = document.createElement("li");
+                li.classList.add("comment-item");
+                li.innerHTML = `<strong>${comment.name}</strong>: ⭐ ${comment.rating} <br> ${comment.text}
+                    <button onclick="addReply(${index})">Rispondi</button>
+                    <button onclick="deleteComment(${index})">❌</button>
+                    <div id="reply-${index}" class="reply-section"></div>`;
+
+                comment.replies.forEach(reply => {
+                    let replyDiv = document.createElement("div");
+                    replyDiv.classList.add("reply-section");
+                    replyDiv.innerHTML = `<strong>${reply.name}</strong>: ${reply.text}`;
+                    li.querySelector(`#reply-${index}`).appendChild(replyDiv);
+                });
+
+                commentList.appendChild(li);
+            });
+        }
+
+        function deleteComment(index) {
+            let comments = JSON.parse(localStorage.getItem("comments")) || [];
+            comments.splice(index, 1);
+            localStorage.setItem("comments", JSON.stringify(comments));
+            loadComments();
+        }
+    </script>
