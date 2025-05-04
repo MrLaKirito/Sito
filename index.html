@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-	 <!-- Ti amo Tappettx -->
+<!--Ti amo Tappetta, mi fai impazzire-->
+<link rel="icon" href="https://png.pngtree.com/png-clipart/20230425/original/pngtree-musical-note-illustration-png-image_9101018.png" type="image/png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dance And Relax</title>
@@ -18,6 +20,14 @@
             background-color: #024B39;
             text-align: center;
             padding: 20px;
+        }
+
+        /* Stile per l'immagine del profilo */
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .tab {
@@ -155,6 +165,9 @@
     <div class="download-section" id="downloadSection" style="display: none;">
         <p>Booking completed! Download your trip details:</p>
         <button onclick="downloadPDF()">Download PDF</button>
+        
+        <p>Need a receipt? Click below to download:</p>
+        <button onclick="downloadReceipt()">Download Receipt</button>
     </div>
 </section>
 
@@ -166,8 +179,28 @@
 
     function downloadPDF() {
         const link = document.createElement("a");
-        link.href = "https://drive.google.com/uc?export=download&id=1JUmW-jq4HZBPJ0_XDLsdtK1g-LNKfXdM";
+        link.href = "https://drive.google.com/uc?export=download&id=1JUmW-jq4HZBPJ0_XDLsdtK1g-LNKfXdM"; // Corrected URL
         link.download = "Trip_Confirmation.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function downloadReceipt() {
+        let name = document.getElementById("name").value.trim();
+        let email = document.getElementById("email").value.trim();
+
+        if (name === "" || email === "") {
+            alert("Please enter your name and email before downloading the receipt!");
+            return;
+        }
+
+        let receiptText = `RECEIPT\n\nName: ${name}\nEmail: ${email}\nTrip Confirmed!\nThank you for booking with us!`;
+
+        let blob = new Blob([receiptText], { type: "text/plain" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Trip_Receipt.txt";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
